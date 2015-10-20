@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
-from flask import Flask, url_for, render_template, request
+from flask import Flask, send_file, render_template, request
 from werkzeug import secure_filename
 from modules.online_test import evaluate_rmse
 from modules.database import connect_db, add_record
@@ -132,25 +132,32 @@ def leader_board_admin(token):
     return render_template('leader_board.html', context=context)
 
 
+@app.route("/file_format")
+def file_format():
+    return send_file('data/file_format.txt')
+
+
 @app.errorhandler(404)
 def not_found(error):
     return render_template('page_not_found.html'), 404
 
 
-def initialize():
-    app.config['AUTH_TOKEN'] = auth_token
-    app.config['UPLOAD_FOLDER'] = folder_path['upload_hw4']
-    app.config['DEV_SET'] = dataset_path['dev_set']
-    app.config['TEST_SET'] = dataset_path['test_set']
-    app.config['DB_PATH'] = database_path['db_hw4']
-    app.config['ID_SET'] = stu_ids
-
-
 if __name__ == "__main__":
-    initialize()
+    app.config.update(dict(
+        AUTH_TOKEN=auth_token,
+        UPLOAD_FOLDER=folder_path['upload_hw4'],
+        DEV_SET=dataset_path['dev_set'],
+        TEST_SET=dataset_path['test_set'],
+        DB_PATH=database_path['db_hw4'],
+        ID_SET=stu_ids,
+        HOST_IP=host_ip,
+        PORT=port,
+        DEBUG=debug
+    ))
 
     db = connect_db(app.config['DB_PATH'])
     db.ensure_tables()
     db.disconnect()
 
-    app.run(debug=True) # host='0.0.0.0'
+    app.run(host=app.config['HOST_IP'], port=app.config['PORT'], \
+        debug=app.config['DEBUG'])
