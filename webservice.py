@@ -2,7 +2,7 @@
 import os
 from flask import Flask, send_file, render_template, request
 from werkzeug import secure_filename
-from modules.online_test import evaluate_rmse
+from modules.online_test import evaluate
 from modules.database import connect_db, add_record
 from config import *
 
@@ -57,22 +57,19 @@ def eval():
 
     if checkbox == None:
         # evaluate on the dev set
-        status, result = evaluate_rmse(saved_path, app.config['DEV_SET'])
+        status, result = evaluate(saved_path, app.config['DEV_SET'])
         if not status:
             context['result'] = result
         else:
-            if result == 0.0:
-                context['result'] = 'Please do not submit golden standard file.'
-                return render_template('online_test.html', context=context)
-
-            context['result'] = 'The RMSE of your result is {0}.'.format(result)
+            context['result'] = 'Accuracy={0} & RMSE={1}.' \
+                .format(result[0], result[1])
             # add record in database
             db = connect_db(app.config['DB_PATH'])
             add_record(db, db.dev_table, andrewid, name, result)
             db.disconnect()
     else:
         # evaluate on the test set (for grading)
-        status, result = evaluate_rmse(saved_path, app.config['TEST_SET'])
+        status, result = evaluate(saved_path, app.config['TEST_SET'])
         if not status:
             context['result'] = result
         else:
@@ -100,9 +97,10 @@ def leader_board():
         context['records'].append(dict(
             rank=rank+1,
             nickname=record[1],
-            rmse=record[2],
-            submission=record[3],
-            timestamp=record[4]
+            accuracy=record[2],
+            rmse=record[3],
+            submission=record[4],
+            timestamp=record[5]
         ))
 
     return render_template('leader_board.html', context=context)
@@ -145,10 +143,10 @@ def not_found(error):
 if __name__ == "__main__":
     app.config.update(dict(
         AUTH_TOKEN=auth_token,
-        UPLOAD_FOLDER=folder_path['upload_hw4'],
-        DEV_SET=dataset_path['dev_set'],
-        TEST_SET=dataset_path['test_set'],
-        DB_PATH=database_path['db_hw4'],
+        UPLOAD_FOLDER=folder_path['upload_hw5'],
+        DEV_SET=dev_results,
+        TEST_SET=test_results,
+        DB_PATH=database_path['db_hw5'],
         ID_SET=stu_ids,
         HOST_IP=host_ip,
         PORT=port,

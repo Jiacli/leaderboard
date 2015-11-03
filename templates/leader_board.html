@@ -43,11 +43,12 @@
 
         <div class="jumbotron">
           <h2 align='center'>Leader Board</h2>
-          <p class="lead">Notice: the ranking here is based on RMSE on development set.</p>
+          <p class="lead">Notice: the ranking is based on Accuracy for development set.</p>
           <table class="table table-striped">
             <tr>
               <th>Rank</th>
               <th>Nickname</th>
+              <th>Accuracy</th>
               <th>RMSE</th>
               <th>Version</th>
               <th>Last Submission</th>
@@ -57,6 +58,7 @@
               <tr>
                 <td>{{record.rank}}</td>
                 <td>{{record.nickname}}</td>
+                <td>{{record.accuracy}}</td>
                 <td>{{record.rmse}}</td>
                 <td>{{record.submission}}</td>
                 <td>{{record.timestamp}}</td>

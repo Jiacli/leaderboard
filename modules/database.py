@@ -7,24 +7,26 @@ from datetime import datetime
 def connect_db(db_file):
     return DBWrapper(db_file)
 
-def add_record(db, table, andrew_id, nickname, metric):
+def add_record(db, table, andrew_id, nickname, results):
     """
         Insert a new record if the andrew_id is not exist.
         Otherwise, update the existing record.
     """
     record = db.get_record_by_id(table, andrew_id)
     timenow = str(datetime.now())
-    print record
+    
     if not record:
         iter_list = []
-        iter_list.append((andrew_id, nickname, metric, 1, timenow))
+        iter_list.append((andrew_id, nickname, results[0], results[1], \
+            1, timenow))
         db.instert_rows(table, record_schema, iter_list)
     else:
         updates = dict(
             andrew_id=andrew_id,
             nickname=nickname,
-            metric=metric,
-            submission=record[3]+1,
+            accuracy=results[0],
+            rmse=results[1],
+            submission=record[4]+1,
             time=timenow
         )
         db.update_record_by_id(table, andrew_id, updates)
@@ -33,7 +35,8 @@ def add_record(db, table, andrew_id, nickname, metric):
 record_schema = [
     ('andrew_id', 'TEXT PRIMARY KEY'),
     ('nickname', 'TEXT'),
-    ('metric', 'DOUBLE'),
+    ('accuracy', 'DOUBLE'),
+    ('rmse', 'DOUBLE'),
     ('submission', 'INTEGER'),
     ('time', 'TEXT')
 ]
@@ -109,8 +112,10 @@ class DBWrapper(object):
         
 
     def update_record_by_id(self, table, andrew_id, updates):
-        sql = "UPDATE {0} SET nickname=?, metric=?, submission=?, time=? WHERE andrew_id=?".format(table)
-        self.exe(sql, (updates['nickname'], updates['metric'], updates['submission'], updates['time'], updates['andrew_id']))
+        sql = "UPDATE {0} SET nickname=?, accuracy=?, rmse=?, submission=?, \
+         time=? WHERE andrew_id=?".format(table)
+        self.exe(sql, (updates['nickname'], updates['accuracy'], updates['rmse'],
+            updates['submission'], updates['time'], updates['andrew_id']))
         self.commit()
 
     def create_index(self, tb_name, schema):
