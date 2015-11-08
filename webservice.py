@@ -158,4 +158,4 @@ if __name__ == "__main__":
     db.disconnect()
 
     app.run(host=app.config['HOST_IP'], port=app.config['PORT'], \
-        debug=app.config['DEBUG'])
+        debug=app.config['DEBUG'], threaded=True)
