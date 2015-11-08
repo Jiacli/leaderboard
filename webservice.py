@@ -92,7 +92,7 @@ def leader_board():
 
     context = dict(records=[])
     
-    records = sorted(records, key=lambda x:x[2])
+    records = sorted(records, key=lambda x:x[2], reverse=True)
     for rank, record in enumerate(records):
         context['records'].append(dict(
             rank=rank+1,
