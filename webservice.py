@@ -51,8 +51,8 @@ def eval():
         return render_template('online_test.html', context=context)
 
     # store file locally
-    filename = secure_filename(testfile.filename)
-    saved_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    # filename = secure_filename(testfile.filename)
+    saved_path = os.path.join(app.config['UPLOAD_FOLDER'], andrewid)
     testfile.save(saved_path)
 
     if checkbox == None:
