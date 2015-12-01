@@ -117,14 +117,15 @@ def leader_board_admin(token):
 
     context = dict(records=[])
     
-    records = sorted(records, key=lambda x:x[2])
+    records = sorted(records, key=lambda x:x[2], reverse=True)
     for rank, record in enumerate(records):
         context['records'].append(dict(
             rank=rank+1,
             nickname=record[1],
-            rmse=record[2],
-            submission=record[3],
-            timestamp=record[4]
+            accuracy=record[2],
+            rmse=record[3],
+            submission=record[4],
+            timestamp=record[5]
         ))
 
     return render_template('leader_board.html', context=context)
