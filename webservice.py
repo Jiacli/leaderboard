@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import os
+import os, re
 from flask import Flask, send_file, render_template, request
 from werkzeug import secure_filename
 from modules.online_test import evaluate
@@ -51,8 +51,8 @@ def eval():
         return render_template('online_test.html', context=context)
 
     # store file locally
-    # filename = secure_filename(testfile.filename)
-    saved_path = os.path.join(app.config['UPLOAD_FOLDER'], andrewid)
+    filename = re.sub('[^A-Za-z]+', '', name) + '_' + andrewid
+    saved_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     testfile.save(saved_path)
 
     if checkbox == None:
@@ -77,7 +77,7 @@ def eval():
             # add record in database
             db = connect_db(app.config['DB_PATH'])
             add_record(db, db.test_table, andrewid, name, result)
-            db.disconnect()        
+            db.disconnect()
 
     return render_template('online_test.html', context=context)
 
